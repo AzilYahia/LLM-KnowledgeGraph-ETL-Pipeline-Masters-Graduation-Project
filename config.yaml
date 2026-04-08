@@ -1,0 +1,22 @@
+paths:
+  # Your exact local paths
+  base_dir: "E:/pfe data/"
+  hosp_dir: "E:/pfe data/mimic-iv-3.1/hosp/"
+  icu_dir: "E:/pfe data/mimic-iv-3.1/icu/"
+  note_dir: "E:/pfe data/mimic-iv-note/"
+
+  # Where we will save the clean outputs
+  processed_data: "data/processed/"
+
+files:
+  admissions: "admissions.csv"
+  patients: "patients.csv"
+  diagnoses: "diagnoses_icd.csv"
+  notes: "discharge.csv"
+
+pipeline:
+  chunk_size: 100000  # Mandatory for 41GB files
+
+neo4j:
+  uri: "bolt://localhost:7687"
+  user: "neo4j"
