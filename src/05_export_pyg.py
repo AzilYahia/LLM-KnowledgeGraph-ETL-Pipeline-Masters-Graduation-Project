@@ -212,7 +212,7 @@ def build_admission_features(df_adm, df_pat, df_diag, df_presc, df_proc, df_lab,
 
 def build_pyg_graph():
     config = load_config()
-    proc_dir = os.path.join(PROJECT_ROOT, config['paths']['processed_data'])
+    proc_dir = config['paths']['processed_data']
 
     print("1. Loading Cleaned Data...")
     df_pat   = pd.read_csv(os.path.join(proc_dir, 'cleaned_patients.csv'))

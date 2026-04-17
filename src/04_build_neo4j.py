@@ -160,16 +160,35 @@ class MIMICGraphBuilder:
     # ---------------------------------------------------------
     # NLP Metadata (now includes medications from NER)
     # ---------------------------------------------------------
+    # ---------------------------------------------------------
+    # NLP Metadata (with built-in NER artifact filtering)
+    # ---------------------------------------------------------
     def inject_nlp_metadata(self, json_data):
-        print(" -> Injecting NLP metadata (symptoms, diseases, medications)...")
+        print(" -> Injecting NLP metadata with artifact filtering...")
+
+        # Fonction de nettoyage rapide
+        def clean_entities(entity_list):
+            # Liste de mots génériques à ignorer (tu peux en ajouter d'autres si besoin)
+            stop_words = {'well', 'sore', 'con', 'app', 'bad', 'low', 'high'}
+            cleaned = []
+            for ent in entity_list:
+                ent = ent.lower().strip()
+                # Règle 1 : Pas de sous-mots avec '##'
+                # Règle 2 : Au moins 3 lettres
+                # Règle 3 : Pas dans notre liste de stop_words
+                if '##' not in ent and len(ent) >= 3 and ent not in stop_words:
+                    cleaned.append(ent)
+            return cleaned
+
         records = []
         for hadm_id, data in json_data.items():
             records.append({
-                "hadm_id":      int(hadm_id),
-                "nlp_symptoms":    data.get("symptoms",    []),
-                "nlp_diseases":    data.get("diseases",    []),
-                "nlp_medications": data.get("medications", []),  # NEW
+                "hadm_id": int(hadm_id),
+                "nlp_symptoms": clean_entities(data.get("symptoms", [])),
+                "nlp_diseases": clean_entities(data.get("diseases", [])),
+                "nlp_medications": clean_entities(data.get("medications", [])),
             })
+
         query = """
         UNWIND $records AS row
         MATCH (a:Admission {id: row.hadm_id})
@@ -229,7 +248,7 @@ def build_knowledge_graph():
         raise ValueError("Neo4j password not found in .env file!")
 
     config = load_config()
-    proc_dir = os.path.join(PROJECT_ROOT, config['paths']['processed_data'])
+    proc_dir = config['paths']['processed_data']
 
     print("1. Loading CSV data into Pandas...")
     df_pat   = pd.read_csv(os.path.join(proc_dir, 'cleaned_patients.csv'))

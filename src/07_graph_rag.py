@@ -14,7 +14,6 @@ import os
 import json
 import time
 
-import TG
 import torch
 import faiss
 import numpy as np
@@ -147,7 +146,7 @@ referencing specific diagnoses, medications, procedures, or patterns from simila
     for attempt in range(1, max_retries + 1):
         try:
             response = groq_client.chat.completions.create(
-                model="llama3-70b-8192",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user",   "content": user_prompt},
@@ -221,7 +220,7 @@ def run_graph_rag(query_hadm_id: int = None, query_admission_idx: int = None, k:
     """
     load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
     config = load_config()
-    proc_dir = os.path.join(PROJECT_ROOT, config['paths']['processed_data'])
+    proc_dir = config['paths']['processed_data']
 
     print("1. Loading admission embeddings...")
     embeddings = torch.load(os.path.join(proc_dir, 'admission_embeddings.pt'), weights_only=False)

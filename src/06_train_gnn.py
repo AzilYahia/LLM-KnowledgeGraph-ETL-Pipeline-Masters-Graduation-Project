@@ -11,6 +11,7 @@ from sklearn.metrics import (
     precision_score, recall_score, confusion_matrix
 )
 import json
+import yaml
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -136,8 +137,14 @@ def print_metrics(label, tgts, probs, preds):
     return {'auc': auc, 'f1': f1, 'precision': prec, 'recall': rec}
 
 
+def load_config():
+    with open(os.path.join(PROJECT_ROOT, 'config.yaml'), 'r') as file:
+        return yaml.safe_load(file)
+
 def train_and_evaluate():
-    proc_dir = os.path.join(PROJECT_ROOT, 'data/processed')
+    config = load_config()
+    proc_dir = config['paths']['processed_data']
+
 
     print("1. Loading PyTorch Graph...")
     data = torch.load(os.path.join(proc_dir, 'mimic_graph.pt'), weights_only=False)

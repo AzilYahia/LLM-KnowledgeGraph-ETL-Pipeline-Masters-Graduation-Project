@@ -13,6 +13,8 @@ files:
   patients: "patients.csv"
   diagnoses: "diagnoses_icd.csv"
   notes: "discharge.csv"
+  procedures: "procedures_icd.csv"  # Added this
+  labevents: "labevents.csv"        # Added this
 
 pipeline:
   chunk_size: 100000  # Mandatory for 41GB files
